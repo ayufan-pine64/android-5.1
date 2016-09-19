@@ -106,9 +106,6 @@ node('linux && lab-worker && pine64') {
                 --description "${CHANGES}\n\n${BUILD_URL}"
             fi
           '''
-
-          stage 'Artifacts'
-          archiveArtifacts artifacts: '*.gz', excludes: null, fingerprint: true, onlyIfSuccessful: true
         }
       }
     }
