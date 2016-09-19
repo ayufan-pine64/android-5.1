@@ -18,6 +18,7 @@ node('linux && lab-worker && pine64') {
         sh 'rm -f *.gz'
 
         withEnv([
+          "VERSION=$VERSION",
           'TARGET=tulip_chiphd-userdebug',
           'USE_CCACHE=true'
         ]) {
@@ -40,6 +41,7 @@ node('linux && lab-worker && pine64') {
         }
 
         withEnv([
+          "VERSION=$VERSION",
           'TARGET=tulip_chiphd_atv-userdebug',
           'USE_CCACHE=true'
         ]) {
