@@ -1,3 +1,13 @@
+properties([
+  parameters([
+    string(defaultValue: '1.0', description: 'Current version number', name: 'VERSION'),
+    text(defaultValue: '', description: 'A list of changes', name: 'CHANGES'),
+    booleanParam(defaultValue: false, description: 'If build should be marked as pre-release', name: 'PRERELEASE'),
+    string(defaultValue: 'ayufan-pine64', description: 'GitHub username or organization', name: 'GITHUB_USER'),
+    string(defaultValue: 'android-5.1', description: 'GitHub repository', name: 'GITHUB_REPO'),
+  ])
+])
+
 node('linux && lab-worker && pine64') {
   ws('/opt/pine64/android') {
     timestamps {
@@ -7,20 +17,23 @@ node('linux && lab-worker && pine64') {
           set -xe
           shopt -s nullglob
 
+          export GITHUB_USER=ayufan-pine64
+          export GITHUB_REPO=android-5.1
+
           export PATH=$(pwd)/bin/linux/amd64:$PATH
           if ! which github-release; then
             curl -L https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2 | tar jx
           fi
 
           github-release release \
-              --tag "$VERSION" \
+              --tag "${BUILD_TAG:-$VERSION}" \
               --name "${BUILD_TAG:-$VERSION}" \
               --description "${CHANGES}" \
               ${PRERELEASE/1/--pre-release}
 
           for file do *.gz; do
             github-release release \
-                --tag "$VERSION" \
+                --tag "${BUILD_TAG:-$VERSION}" \
                 --name "${BUILD_TAG:-$VERSION}" \
                 --file "$file"
           done
