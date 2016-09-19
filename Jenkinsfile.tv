@@ -1,6 +1,3 @@
-properties([
-])
-
 node('linux && lab-worker && pine64') {
   ws('/opt/pine64/android') {
     sh '''#!/bin/bash
