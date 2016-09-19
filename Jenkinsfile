@@ -1,18 +1,33 @@
-properties([
-  parameters([
-    string(defaultValue: '1.0', description: 'Current version number', name: 'VERSION'),
-    text(defaultValue: '', description: 'A list of changes', name: 'CHANGES'),
-    booleanParam(defaultValue: false, description: 'If build should be marked as pre-release', name: 'PRERELEASE'),
-    string(defaultValue: 'ayufan-pine64', description: 'GitHub username or organization', name: 'GITHUB_USER'),
-    string(defaultValue: 'android-5.1', description: 'GitHub repository', name: 'GITHUB_REPO'),
-  ])
-])
-
 node('linux && lab-worker && pine64') {
   ws('/opt/pine64/android') {
     timestamps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
-        stage 'Artifacts'
+        sh 'rm -f *.gz'
+
+/*
+        withEnv([
+          'TARGET=tulip_chiphd_atv-userdebug',
+          'USE_CCACHE=true'
+        ]) {
+          stage 'Build'
+          retry(2) {
+            sh '''#!/bin/bash
+              source build/envsetup.sh
+              lunch "${TARGET}"
+              make -j6
+            '''
+          }
+
+          stage 'Image'
+          sh '''#!/bin/bash
+        		source build/envsetup.sh
+        		lunch "${TARGET}"
+            set -xe
+            rm -f *.img.gz
+        		sdcard_image "${BUILD_TAG}.img.gz"
+          '''
+        }*/
+
         sh '''#!/bin/bash
           set -xe
           shopt -s nullglob
@@ -38,6 +53,8 @@ node('linux && lab-worker && pine64') {
                 --file "$file"
           done
         '''
+
+        archiveArtifacts artifacts: 'jenkins-*.gz', excludes: null, fingerprint: true, onlyIfSuccessful: true
       }
     }
   }
