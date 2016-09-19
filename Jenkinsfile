@@ -1,11 +1,11 @@
-node('linux && lab-worker && pine64') {
-  properties [
-    [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
-      [$class: 'StringParameterDefinition', defaultValue: '1.0', description: '', name: 'VERSION'],
-      [$class: 'TextParameterDefinition', defaultValue: '', description: '', name: 'CHANGES']
-    ]]
-  ]
+properties([
+  [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
+    [$class: 'StringParameterDefinition', defaultValue: '1.0', description: '', name: 'VERSION'],
+    [$class: 'TextParameterDefinition', defaultValue: '', description: '', name: 'CHANGES']
+  ]]
+])
 
+node('linux && lab-worker && pine64') {
   ws('/opt/pine64/android') {
     stage 'Regular'
     retry(4) {
