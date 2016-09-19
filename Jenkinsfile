@@ -5,7 +5,7 @@ properties [
 	])
 ]
 
-node('linux & lab-worker & pine64') {
+node('linux && lab-worker && pine64') {
 	ws('/opt/pine64/android') {
 		stage 'Regular'
 		retry(4) {
