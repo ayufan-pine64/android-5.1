@@ -1,8 +1,8 @@
 properties [
-	parameters([
-		string(defaultValue: '1.0', description: '', name: 'VERSION'),
-		text(defaultValue: '', description: '', name: 'CHANGES')
-	])
+  [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
+    [$class: 'StringParameterDefinition', defaultValue: '1.0', description: '', name: 'VERSION'],
+    [$class: 'TextParameterDefinition', defaultValue: '', description: '', name: 'CHANGES']
+	]]
 ]
 
 node('linux && lab-worker && pine64') {
