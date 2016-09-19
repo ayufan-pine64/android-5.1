@@ -1,0 +1,31 @@
+node('linux && lab-worker && pine64') {
+  ws('/opt/pine64/android') {
+    timestamps {
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+        stage 'Artifacts'
+        sh '''#!/bin/bash
+          set -xe
+          shopt -s nullglob
+
+          export PATH=$(pwd)/bin/linux/amd64:$PATH
+          if ! which github-release; then
+            curl -L https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2 | tar jx
+          fi
+
+          github-release release \
+              --tag "$VERSION" \
+              --name "${BUILD_TAG:-$VERSION}" \
+              --description "${CHANGES}" \
+              ${PRERELEASE/1/--pre-release}
+
+          for file do *.gz; do
+            github-release release \
+                --tag "$VERSION" \
+                --name "${BUILD_TAG:-$VERSION}" \
+                --file "$file"
+          done
+        '''
+      }
+    }
+  }
+}

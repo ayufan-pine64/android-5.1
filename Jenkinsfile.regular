@@ -1,29 +1,45 @@
 node('linux && lab-worker && pine64') {
   ws('/opt/pine64/android') {
-    timestamps { wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
-      sh '''#!/bin/bash
-      rm -f jenkins*.gz
-      '''
+    timestamps {
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
+        withEnv([
+          'TARGET=tulip_chiphd-userdebug',
+          'USE_CCACHE=true'
+        ]) {
+          stage 'Build'
+          retry(2) {
+            sh '''#!/bin/bash
+              source build/envsetup.sh
+              lunch "${TARGET}"
+              make -j6
+            '''
+          }
 
-      stage 'Build'
-      retry(2) {
-        sh '''#!/bin/bash
+          stage 'Image'
+          sh '''#!/bin/bash
+        		source build/envsetup.sh
+        		lunch "${TARGET}"
+            set -xe
+            rm -f *.img.gz
+        		sdcard_image "${BUILD_TAG}.img.gz"
+          '''
 
-        source build/envsetup.sh
-        lunch tulip_chiphd-userdebug
-        make -j5
-        '''
+          stage 'Artifacts'
+          sh '''#!/bin/bash
+            set -xe
+        		which dpl || gem install dpl
+        		dpl --provider=releases \
+        			--api-key="${GITLAB_TOKEN}" \
+        			--file="${BUILD_TAG}.img.gz" \
+        			--file=out/taret/product/system.img \
+        			--file=out/taret/product/kernel \
+        			--file=out/taret/product/recovery.img \
+        			--file=out/taret/product/recovery-ramdisk.img
+          '''
+
+          archiveArtifacts artifacts: 'jenkins-*.gz', excludes: null, fingerprint: true, onlyIfSuccessful: true
+        }
       }
-
-      stage 'Image'
-      sh '''#!/bin/bash
-      source build/envsetup.sh
-      lunch tulip_chiphd-userdebug
-      sdcard_image "${BUILD_TAG}.img.gz"
-      '''
-
-      stage 'Artifacts'
-      archiveArtifacts artifacts: 'jenkins-*.gz', excludes: null, fingerprint: true, onlyIfSuccessful: true
-    } }
+    }
   }
 }
