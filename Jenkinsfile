@@ -33,10 +33,10 @@ node('linux && lab-worker && pine64') {
 
           stage 'Image Regular'
           sh '''#!/bin/bash
-        		source build/envsetup.sh
-        		lunch "${TARGET}"
+            source build/envsetup.sh
+            lunch "${TARGET}"
             set -xe
-        		sdcard_image "${JOB_NAME}-v${VERSION}-r${BUILD_NUMBER}.img.gz"
+            sdcard_image "${JOB_NAME}-v${VERSION}-r${BUILD_NUMBER}.img.gz"
           '''
         }
 
@@ -56,10 +56,10 @@ node('linux && lab-worker && pine64') {
 
           stage 'Image TV'
           sh '''#!/bin/bash
-        		source build/envsetup.sh
-        		lunch "${TARGET}"
+            source build/envsetup.sh
+            lunch "${TARGET}"
             set -xe
-        		sdcard_image "${JOB_NAME}-tv-v${VERSION}-r${BUILD_NUMBER}.img.gz"
+            sdcard_image "${JOB_NAME}-tv-v${VERSION}-r${BUILD_NUMBER}.img.gz"
           '''
         }
 
